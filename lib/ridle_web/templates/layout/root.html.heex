@@ -13,16 +13,9 @@
     <header>
       <section class="container">
         <nav>
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
-            <% end %>
-          </ul>
+          <%= link "Home", to: Routes.live_path(@conn, RidleWeb.HomeLive) %>
         </nav>
-        <a href="https://phoenixframework.org/" class="phx-logo">
-          <img src={Routes.static_path(@conn, "/images/phoenix.png")} alt="Phoenix Framework Logo"/>
-        </a>
+        <h1 class="text-2xl uppercase">Ridle</h1>
       </section>
     </header>
     <%= @inner_content %>
