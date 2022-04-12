@@ -1,8 +1,11 @@
 <div class="p-8">
-  <img
-    src="https://www.cars-data.com/webp/thumbs/350px/ford/ford-capri_3604_1.webp"
-    alt="Guess the model, make, and year"
-  />
+  <div>
+    <img
+      class="w-full"
+      src="https://www.cars-data.com/webp/thumbs/350px/ford/ford-capri_3604_1.webp"
+      alt="Guess the model, make, and year"
+    />
+  </div>
 
   <div id="guesses" phx-update="append" class="mt-8 uppercase">
     <%= for guess <- @guesses do %>
@@ -15,9 +18,9 @@
   <% else %>
     <.form let={f} for={@changeset} phx-submit="guess">
       <div class="flex gap-x-2 mb-8">
-        <.field form={f} field={:make} placeholder="Make" w="w-44" />
-        <.field form={f} field={:model} placeholder="Model" w="w-56" />
-        <.field form={f} field={:year} type="number" min="1000" max="3000" placeholder="Year" w="w-32" />
+        <.field form={f} field={:make} placeholder="Make" w="w-5/12" />
+        <.field form={f} field={:model} placeholder="Model" w="w-5/12" />
+        <.field form={f} field={:year} type="number" min="1000" max="3000" placeholder="Year" w="w-2/12 text-right" />
       </div>
 
       <button

@@ -16,8 +16,8 @@ defmodule RidleWeb.HomeLive do
       },
       %{
         id: "cec590b2-9cd5-4ba7-85e4-c7a50262390e",
-        make: %{v: "Ford", s: false, d: nil},
-        model: %{v: "Capri", s: true, d: nil},
+        make: %{v: "Ferrari", s: false, d: nil},
+        model: %{v: "Testa Rossa", s: true, d: nil},
         year: %{v: "1978", s: false, d: ""}
       }
     ]
@@ -67,9 +67,9 @@ defmodule RidleWeb.HomeLive do
   def guess(assigns) do
     ~H"""
     <div id={@value.id} class="flex gap-x-2 mb-2">
-      <.part w={44} value={@value.make} />
-      <.part w={56} value={@value.model} />
-      <.part w={32} value={@value.year} />
+      <.part value={@value.make} class="w-5/12" />
+      <.part value={@value.model} class="w-5/12" />
+      <.part value={@value.year} class="w-2/12 text-right" />
     </div>
     """
   end
@@ -77,15 +77,27 @@ defmodule RidleWeb.HomeLive do
   def part(assigns) do
     class =
       if assigns.value.s do
-        "text-white bg-green-600 border-green-600"
+        "bg-green-100 text-green-800"
       else
-        "text-zinc-800 bg-zinc-100"
+        "text-zinc-800"
       end
 
     ~H"""
-    <div class={"w-#{@w} py-2 px-3 #{class}"}>
+    <div class={"#{@class} flex justify-between py-2 px-3 #{class}"}>
       <%= @value.v %>
       <%= if @value.d, do: raw(@value.d) %>
+      <%= if @value.s do %>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      <% end %>
     </div>
     """
   end
@@ -124,7 +136,7 @@ defmodule RidleWeb.HomeLive do
       max: @max,
       class: ~s"
         #{@w}
-        py-2 px-3 border-0 uppercase bg-zinc-50 text-zinc-800 ring-2 ring-inset ring-zinc-400
+        py-2 px-3 border-0 bg-zinc-50 text-zinc-800 ring-2 ring-inset ring-zinc-400
         focus:bg-white focus:ring-2 focus:ring-zinc-600
         #{error_class}"
     ) %>
