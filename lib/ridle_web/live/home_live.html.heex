@@ -1,5 +1,8 @@
 <div class="p-8">
-  <img src="https://www.cars-data.com/webp/thumbs/350px/ford/ford-capri_3604_1.webp" alt="Guess the model, make, and year" />
+  <img
+    src="https://www.cars-data.com/webp/thumbs/350px/ford/ford-capri_3604_1.webp"
+    alt="Guess the model, make, and year"
+  />
 
   <div id="guesses" phx-update="append" class="mt-8 uppercase">
     <%= for guess <- @guesses do %>
@@ -7,39 +10,52 @@
     <% end %>
   </div>
 
-    <%= if @solved? do %>
-      <span class="text-7xl text-green-700">CORRECT!</span>
-    <% else %>
-      <.form let={f} for={@changeset} phx-submit="guess">
+  <%= if @solved? do %>
+    <span class="text-7xl text-green-700">CORRECT!</span>
+  <% else %>
+    <.form let={f} for={@changeset} phx-submit="guess">
       <div class="flex gap-x-2 mb-8">
-      <.field class="a" form={f} field={:make}>
-      <.text_input form={f} field={:make} opts={[placeholder: "Make", class: "w-44 py-2 px-3 uppercase"]} />
-      </.field>
-      <.field form={f} field={:model}>
-      <.text_input form={f} field={:model} opts={[placeholder: "Model", class: "w-56 py-2 px-3 uppercase"]} />
-      </.field>
-      <.field form={f} field={:year}>
-      <.text_input form={f} field={:year} opts={[placeholder: "Year", class: "w-32 py-2 px-3 uppercase"]} />
-      </.field>
+        <.field form={f} field={:make} placeholder="Make" w="w-44" />
+        <.field form={f} field={:model} placeholder="Model" w="w-56" />
+        <.field form={f} field={:year} type="number" min="1000" max="3000" placeholder="Year" w="w-32" />
       </div>
 
-      <button type="submit" class="px-5 py-2 flex inset-0 font-medium bg-green-50 text-green-700 border border-green-600" %>
-      <span class="pr-4">Guess</span>
-      <svg class="w-6 h-6 stroke-green-100 fill-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-labelledby="title"
-      aria-describedby="desc" role="img" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <title>Enter Key</title>
-      <desc>Press Enter to submit your guess.</desc>
-      <rect data-name="l"
-      x="2" y="2" width="60" height="60" rx="7.8" ry="7.8"
-      stroke-miterlimit="10" stroke-width="4"></rect>
-      <path data-name="layer1" stroke-miterlimit="10"
-      stroke-width="4" d="M16 36h30v-12"></path>
-      <path data-name="layer1" stroke-miterlimit="10"
-      stroke-width="4" d="M26 44l-8-8 8-8"></path>
-      </svg>
+      <button
+        type="submit"
+        class="px-5 py-2 flex inset-0 font-medium bg-green-50 text-green-700 border border-green-600"
+        %
+      >
+        <span class="pr-4">Guess</span>
+        <svg
+          class="w-6 h-6 stroke-green-100 fill-green-700"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 64 64"
+          aria-labelledby="title"
+          aria-describedby="desc"
+          role="img"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+        >
+          <title>Enter Key</title>
+          <desc>Press Enter to submit your guess.</desc>
+          <rect
+            data-name="l"
+            x="2"
+            y="2"
+            width="60"
+            height="60"
+            rx="7.8"
+            ry="7.8"
+            stroke-miterlimit="10"
+            stroke-width="4"
+          >
+          </rect>
+          <path data-name="layer1" stroke-miterlimit="10" stroke-width="4" d="M16 36h30v-12">
+          </path>
+          <path data-name="layer1" stroke-miterlimit="10" stroke-width="4" d="M26 44l-8-8 8-8">
+          </path>
+        </svg>
       </button>
-      </.form>
-      <% end %>
-
+    </.form>
+  <% end %>
   <!-- <pre><%= inspect(@changeset, pretty: true) %></pre> -->
 </div>

@@ -6,21 +6,21 @@ defmodule RidleWeb.HomeLive do
   def mount(_params, _session, socket) do
     solution = %{make: "ford", model: "capri", year: 1978}
 
-    initial_guesses = []
-    # initial_guesses = [
-    #   %{
-    #     id: "cec590b2-9cd5-4ba7-85e4-c7a50262390f",
-    #     make: %{v: "Aston Martin"},
-    #     model: %{v: "DBS"},
-    #     year: %{v: "2008"}
-    #   },
-    #   %{
-    #     id: "cec590b2-9cd5-4ba7-85e4-c7a50262390e",
-    #     make: %{v: "Ford"},
-    #     model: %{v: "Capri"},
-    #     year: %{v: "1978"}
-    #   }
-    # ]
+    # initial_guesses = []
+    initial_guesses = [
+      %{
+        id: "cec590b2-9cd5-4ba7-85e4-c7a50262390f",
+        make: %{v: "Aston Martin", s: false, d: nil},
+        model: %{v: "DBS", s: false, d: nil},
+        year: %{v: "2008", s: false, d: ""}
+      },
+      %{
+        id: "cec590b2-9cd5-4ba7-85e4-c7a50262390e",
+        make: %{v: "Ford", s: false, d: nil},
+        model: %{v: "Capri", s: true, d: nil},
+        year: %{v: "1978", s: false, d: ""}
+      }
+    ]
 
     changeset = guess_changeset()
     socket = assign(socket, solved?: false, solution: solution, changeset: changeset)
@@ -75,12 +75,17 @@ defmodule RidleWeb.HomeLive do
   end
 
   def part(assigns) do
-    class = if assigns.value.s, do: "text-green-700 bg-green-50 ring-2 ring-green-500"
+    class =
+      if assigns.value.s do
+        "text-white bg-green-600 border-green-600"
+      else
+        "text-zinc-800 bg-zinc-100"
+      end
 
     ~H"""
-    <div class={"w-#{@w} py-2 px-3 border border-transparent #{class}"}>
+    <div class={"w-#{@w} py-2 px-3 #{class}"}>
       <%= @value.v %>
-      <%= if @value.d, do: raw @value.d %>
+      <%= if @value.d, do: raw(@value.d) %>
     </div>
     """
   end
@@ -89,7 +94,7 @@ defmodule RidleWeb.HomeLive do
     assigns = Map.put_new(assigns, :opts, [])
 
     ~H"""
-    <%= text_input @form, @field, @opts %>
+    <%= text_input(@form, @field, @opts) %>
     """
   end
 
@@ -97,17 +102,32 @@ defmodule RidleWeb.HomeLive do
     %{form: form, field: field} = assigns
     errors = Keyword.get_values(form.errors, field)
 
-    class = Map.get(assigns, :class, "")
+    assigns =
+      assigns
+      |> Map.put_new(:placeholder, nil)
+      |> Map.put_new(:type, "text")
+      |> Map.put_new(:min, nil)
+      |> Map.put_new(:max, nil)
 
-    class =
+    error_class =
       if errors != [] do
-        class <> " errors"
+        "bg-rose-100 focus:bg-rose-50 ring-rose-300"
       else
-        class
+        ""
       end
 
     ~H"""
-    <div class={"#{class}"}><%= render_slot(@inner_block) %></div>
+    <%= text_input(form, field,
+      placeholder: @placeholder,
+      type: @type,
+      min: @min,
+      max: @max,
+      class: ~s"
+        #{@w}
+        py-2 px-3 border-0 uppercase bg-zinc-50 text-zinc-800 ring-2 ring-inset ring-zinc-400
+        focus:bg-white focus:ring-2 focus:ring-zinc-600
+        #{error_class}"
+    ) %>
     """
   end
 end

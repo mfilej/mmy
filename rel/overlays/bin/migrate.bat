@@ -1,0 +1,1 @@
+call "%~dp0\ridle" eval Ridle.Release.migrate
