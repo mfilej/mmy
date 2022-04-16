@@ -4,23 +4,24 @@ defmodule RidleWeb.HomeLive do
   alias Ridle.Game
 
   def mount(_params, _session, socket) do
-    solution = %{make: "ford", model: "capri", year: 1978}
+    solution = %{make: "subaru", model: "justy", year: 1984}
 
-    # initial_guesses = []
-    initial_guesses = [
-      %{
-        id: "cec590b2-9cd5-4ba7-85e4-c7a50262390f",
-        make: %{v: "Aston Martin", s: false, d: nil},
-        model: %{v: "DBS", s: false, d: nil},
-        year: %{v: "2008", s: false, d: ""}
-      },
-      %{
-        id: "cec590b2-9cd5-4ba7-85e4-c7a50262390e",
-        make: %{v: "Ferrari", s: false, d: nil},
-        model: %{v: "Testa Rossa", s: true, d: nil},
-        year: %{v: "1978", s: false, d: ""}
-      }
-    ]
+    initial_guesses = []
+
+    # initial_guesses = [
+    #   %{
+    #     id: "cec590b2-9cd5-4ba7-85e4-c7a50262390f",
+    #     make: %{v: "Aston Martin", s: true, d: nil},
+    #     model: %{v: "DBS", s: false, d: nil},
+    #     year: %{v: "2008", s: false, d: ""}
+    #   },
+    #   %{
+    #     id: "cec590b2-9cd5-4ba7-85e4-c7a50262390e",
+    #     make: %{v: "Ferrari", s: true, d: nil},
+    #     model: %{v: "Testa Rossa", s: true, d: nil},
+    #     year: %{v: "1978", s: false, d: ""}
+    #   }
+    # ]
 
     changeset = guess_changeset()
     socket = assign(socket, solved?: false, solution: solution, changeset: changeset)
@@ -83,19 +84,21 @@ defmodule RidleWeb.HomeLive do
       end
 
     ~H"""
-    <div class={"#{@class} flex justify-between py-2 px-3 #{class}"}>
-      <%= @value.v %>
-      <%= if @value.d, do: raw(@value.d) %>
+    <div class={"#{@class} flex justify-between items-center py-2 px-3 #{class}"}>
+      <span><%= @value.v %></span>
+      <span><%= if @value.d, do: raw(@value.d) %></span>
       <%= if @value.s do %>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
+          class="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          <path
+            fill-rule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"
+          />
         </svg>
       <% end %>
     </div>
@@ -123,7 +126,7 @@ defmodule RidleWeb.HomeLive do
 
     error_class =
       if errors != [] do
-        "bg-rose-100 ring-rose-300 focus:bg-rose-50"
+        "error bg-rose-100 ring-rose-300 focus:bg-rose-50"
       else
         "bg-zinc-50 ring-zinc-400 focus:bg-white"
       end
@@ -134,6 +137,7 @@ defmodule RidleWeb.HomeLive do
       type: @type,
       min: @min,
       max: @max,
+      autocomplete: "off",
       class: ~s"
         #{@w}
         py-2 px-3 border-0 text-zinc-800 ring-2 ring-inset
