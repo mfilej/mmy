@@ -79,7 +79,7 @@ defmodule RidleWeb.HomeLive do
       if assigns.value.s do
         "bg-green-100 text-green-800"
       else
-        "text-zinc-800"
+        "bg-zinc-100 text-zinc-800"
       end
 
     ~H"""
@@ -123,9 +123,9 @@ defmodule RidleWeb.HomeLive do
 
     error_class =
       if errors != [] do
-        "bg-rose-100 focus:bg-rose-50 ring-rose-300"
+        "bg-rose-100 ring-rose-300 focus:bg-rose-50"
       else
-        ""
+        "bg-zinc-50 ring-zinc-400 focus:bg-white"
       end
 
     ~H"""
@@ -136,8 +136,8 @@ defmodule RidleWeb.HomeLive do
       max: @max,
       class: ~s"
         #{@w}
-        py-2 px-3 border-0 bg-zinc-50 text-zinc-800 ring-2 ring-inset ring-zinc-400
-        focus:bg-white focus:ring-2 focus:ring-zinc-600
+        py-2 px-3 border-0 text-zinc-800 ring-2 ring-inset
+        focus:ring-2 focus:ring-zinc-600
         #{error_class}"
     ) %>
     """
