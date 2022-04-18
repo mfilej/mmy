@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+pg_dump -Fc | pg_restore -h localhost -p 5433 -U postgres -d ridle --no-acl --clean --if-exists
