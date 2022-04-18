@@ -21,9 +21,15 @@ defmodule Ridle.Game.Guess do
   def changeset(schema, attrs) do
     schema
     |> cast(attrs, @castable_attrs)
-    |> update_change(:make, &String.downcase/1)
-    |> update_change(:model, &String.downcase/1)
+    |> update_change(:make, &normalize/1)
+    |> update_change(:model, &normalize/1)
     |> validate_required(@required_attrs)
     |> validate_number(:year, less_than: 10_000, greater_than: 1_000)
+  end
+
+  defp normalize(string) do
+    string
+    |> String.downcase()
+    |> String.replace(~r/[^a-z0-9]/, "")
   end
 end

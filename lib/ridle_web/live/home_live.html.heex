@@ -1,14 +1,14 @@
 <div class="bg-zinc-50">
   <img
     class="w-full"
-    src="https://www.cars-data.com/webp/subaru/subaru-justy_2455_2.webp"
+    src={@round.image_url}
     alt="Guess the model, make, and year"
   />
 </div>
 
 <div id="guesses" phx-update="append" class="mt-4 uppercase">
   <%= for guess <- @guesses do %>
-    <.guess value={guess} solution={@solution} />
+    <.guess value={guess} />
   <% end %>
 </div>
 

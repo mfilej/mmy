@@ -4,8 +4,6 @@ defmodule RidleWeb.HomeLive do
   alias Ridle.Game
 
   def mount(_params, _session, socket) do
-    solution = %{make: "subaru", model: "justy", year: 1984}
-
     initial_guesses = []
 
     # initial_guesses = [
@@ -23,18 +21,22 @@ defmodule RidleWeb.HomeLive do
     #   }
     # ]
 
+    round = Game.current_round(DateTime.utc_now())
+
     changeset = guess_changeset()
-    socket = assign(socket, solved?: false, solution: solution, changeset: changeset)
+
+    socket = assign(socket, round: round, solved?: false, changeset: changeset)
+
     {:ok, socket, temporary_assigns: [guesses: initial_guesses]}
   end
 
   def handle_event("guess", %{"guess" => params}, socket) do
-    solution = socket.assigns.solution
+    round = socket.assigns.round
 
     case guess_changeset(params) do
       %Ecto.Changeset{valid?: true, changes: changes} ->
         year_d =
-          case solution.year - changes.year do
+          case round.year - changes.year do
             0 -> ""
             diff when diff > 0 -> "&uarr;"
             diff when diff < 0 -> "&darr;"
@@ -42,16 +44,16 @@ defmodule RidleWeb.HomeLive do
 
         guess = %{
           id: Ecto.UUID.generate(),
-          make: %{v: params["make"], s: changes.make == solution.make, d: nil},
-          model: %{v: params["model"], s: changes.model == solution.model, d: nil},
-          year: %{v: params["year"], s: changes.year == solution.year, d: year_d}
+          make: %{v: changes.make, s: changes.make == round.make, d: nil},
+          model: %{v: changes.model, s: changes.model == round.model, d: nil},
+          year: %{v: changes.year, s: changes.year == round.year, d: year_d}
         }
 
         socket =
           socket
           |> update(:guesses, fn guesses -> [guess | guesses] end)
           |> assign(:changeset, guess_changeset())
-          |> assign(:solved?, changes == solution)
+          |> assign(:solved?, changes == solution(round))
 
         {:noreply, socket}
 
@@ -65,7 +67,7 @@ defmodule RidleWeb.HomeLive do
     Game.Guess.new() |> Game.Guess.changeset(attrs)
   end
 
-  def guess(assigns) do
+  defp guess(assigns) do
     ~H"""
     <div id={@value.id} class="flex gap-x-2 mb-2">
       <.part value={@value.make} class="w-5/12" />
@@ -145,5 +147,9 @@ defmodule RidleWeb.HomeLive do
         #{error_class}"
     ) %>
     """
+  end
+
+  defp solution(%Game.Round{make: make, model: model, year: year}) do
+    %{make: make, model: model, year: year}
   end
 end
