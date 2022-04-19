@@ -6,7 +6,25 @@ defmodule RidleWeb.HomeLive do
   alias Ridle.Game
 
   def mount(_params, _session, socket) do
-    %{id: id} = round = Game.current_round(DateTime.utc_now())
+    {:ok, socket}
+  end
+
+  def handle_params(%{"now" => now}, _uri, socket) do
+    datetime =
+      case DateTime.from_iso8601(now) do
+        {:ok, datetime, 0} -> datetime
+        {:error, _} -> nil
+      end
+
+    init(socket, datetime)
+  end
+
+  def handle_params(_params, _uri, socket), do: init(socket)
+
+  defp init(socket, datetime \\ nil) do
+    datetime = datetime || DateTime.utc_now()
+
+    %{id: id} = round = Game.current_round(datetime)
 
     {guesses, solved?} =
       case get_connect_params(socket) do
@@ -40,7 +58,7 @@ defmodule RidleWeb.HomeLive do
     socket =
       assign(socket, round: round, guesses: guesses, solved?: solved?, changeset: changeset)
 
-    {:ok, socket}
+    {:noreply, socket}
   end
 
   def handle_event("guess", %{"guess" => params}, socket) do
@@ -49,10 +67,15 @@ defmodule RidleWeb.HomeLive do
     case guess_changeset(params) do
       %Ecto.Changeset{valid?: true, changes: changes} ->
         year_d =
-          case round.year - changes.year do
-            0 -> ""
-            diff when diff > 0 -> "&uarr;"
-            diff when diff < 0 -> "&darr;"
+          cond do
+            changes.year > round.year_end ->
+              "&darr;"
+
+            changes.year < round.year_start ->
+              "&uarr;"
+
+            true ->
+              ""
           end
 
         guesses = [
@@ -60,12 +83,12 @@ defmodule RidleWeb.HomeLive do
             "id" => Ecto.UUID.generate(),
             "make" => %{"v" => changes.make, "s" => changes.make == round.make, "d" => nil},
             "model" => %{"v" => changes.model, "s" => changes.model == round.model, "d" => nil},
-            "year" => %{"v" => changes.year, "s" => changes.year == round.year, "d" => year_d}
+            "year" => %{"v" => changes.year, "s" => year_solved?(round, changes), "d" => year_d}
           }
           | socket.assigns.guesses
         ]
 
-        solved? = changes == solution(round)
+        solved? = solved?(round, changes)
 
         socket =
           socket
@@ -174,9 +197,12 @@ defmodule RidleWeb.HomeLive do
     """
   end
 
-  defp solution(%Game.Round{make: make, model: model, year: year}) do
-    %{make: make, model: model, year: year}
+  defp solved?(%Game.Round{} = round, changes) do
+    round.make == changes.make && round.model == changes.model && year_solved?(round, changes)
   end
+
+  defp year_solved?(%Game.Round{year_start: year_start, year_end: year_end}, %{year: year}),
+    do: year in year_start..year_end
 
   defp sigil_k(string, []) do
     string
