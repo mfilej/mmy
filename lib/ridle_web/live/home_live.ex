@@ -1,9 +1,23 @@
 defmodule RidleWeb.HomeLive do
   use RidleWeb, :live_view
 
+  require Logger
+
   alias Ridle.Game
 
   def mount(_params, _session, socket) do
+    %{id: id} = round = Game.current_round(DateTime.utc_now())
+
+    {guesses, solved?} =
+      case get_connect_params(socket) do
+        %{"state" => %{"id" => ^id, "solved" => solved?, "guesses" => guesses}} ->
+          {guesses, solved?}
+
+        _ ->
+          Logger.debug("Unable to retrieve state from localStorage")
+          {[], false}
+      end
+
     initial_guesses = []
 
     # initial_guesses = [
@@ -21,13 +35,12 @@ defmodule RidleWeb.HomeLive do
     #   }
     # ]
 
-    round = Game.current_round(DateTime.utc_now())
-
     changeset = guess_changeset()
 
-    socket = assign(socket, round: round, solved?: false, changeset: changeset)
+    socket =
+      assign(socket, round: round, guesses: guesses, solved?: solved?, changeset: changeset)
 
-    {:ok, socket, temporary_assigns: [guesses: initial_guesses]}
+    {:ok, socket}
   end
 
   def handle_event("guess", %{"guess" => params}, socket) do
@@ -42,18 +55,25 @@ defmodule RidleWeb.HomeLive do
             diff when diff < 0 -> "&darr;"
           end
 
-        guess = %{
-          id: Ecto.UUID.generate(),
-          make: %{v: changes.make, s: changes.make == round.make, d: nil},
-          model: %{v: changes.model, s: changes.model == round.model, d: nil},
-          year: %{v: changes.year, s: changes.year == round.year, d: year_d}
-        }
+        guesses = [
+          %{
+            "id" => Ecto.UUID.generate(),
+            "make" => %{"v" => changes.make, "s" => changes.make == round.make, "d" => nil},
+            "model" => %{"v" => changes.model, "s" => changes.model == round.model, "d" => nil},
+            "year" => %{"v" => changes.year, "s" => changes.year == round.year, "d" => year_d}
+          }
+          | socket.assigns.guesses
+        ]
+
+        solved? = changes == solution(round)
 
         socket =
           socket
-          |> update(:guesses, fn guesses -> [guess | guesses] end)
+          |> assign(:guesses, guesses)
           |> assign(:changeset, guess_changeset())
-          |> assign(:solved?, changes == solution(round))
+          |> assign(:solved?, solved?)
+          |> push_event("refocus", %{})
+          |> push_event("save", %{id: round.id, guesses: guesses, solved: solved?})
 
         {:noreply, socket}
 
@@ -69,27 +89,27 @@ defmodule RidleWeb.HomeLive do
 
   defp guess(assigns) do
     ~H"""
-    <div id={@value.id} class="flex gap-x-2 mb-2">
-      <.part value={@value.make} class="w-5/12" />
-      <.part value={@value.model} class="w-5/12" />
-      <.part value={@value.year} class="w-2/12 text-right" />
+    <div id={@value["id"]} class="flex gap-x-2 mb-2">
+      <.part value={@value["make"]} class="w-5/12" />
+      <.part value={@value["model"]} class="w-5/12" />
+      <.part value={@value["year"]} class="w-2/12 text-right" />
     </div>
     """
   end
 
   def part(assigns) do
     class =
-      if assigns.value.s do
-        "bg-green-100 text-green-800"
+      if assigns.value["s"] do
+        ~k"bg-green-100 text-green-800"
       else
-        "bg-zinc-100 text-zinc-800"
+        ~k"bg-rose-50 text-rose-900"
       end
 
     ~H"""
     <div class={"#{@class} flex justify-between items-center py-2 px-3 #{class}"}>
-      <span><%= @value.v %></span>
-      <span><%= if @value.d, do: raw(@value.d) %></span>
-      <%= if @value.s do %>
+      <span><%= @value["v"] %></span>
+      <span><%= if d = @value["d"], do: raw(d) %></span>
+      <%= if @value["s"] do %>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5"
@@ -128,9 +148,14 @@ defmodule RidleWeb.HomeLive do
 
     error_class =
       if errors != [] do
-        "error bg-rose-100 ring-rose-300 focus:bg-rose-50"
+        ~k"""
+        error bg-rose-100 ring-rose-300
+        placeholder:text-rose-400
+        focus:bg-white focus:ring-rose-800
+        placeholder:focus:text-zinc-500
+        """
       else
-        "bg-zinc-50 ring-zinc-400 focus:bg-white"
+        ~k"bg-zinc-50 ring-zinc-400 focus:bg-white"
       end
 
     ~H"""
@@ -140,7 +165,7 @@ defmodule RidleWeb.HomeLive do
       min: @min,
       max: @max,
       autocomplete: "off",
-      class: ~s"
+      class: ~k"
         #{@w}
         py-2 px-3 border-0 text-zinc-800 ring-2 ring-inset
         focus:ring-2 focus:ring-zinc-600
@@ -151,5 +176,11 @@ defmodule RidleWeb.HomeLive do
 
   defp solution(%Game.Round{make: make, model: model, year: year}) do
     %{make: make, model: model, year: year}
+  end
+
+  defp sigil_k(string, []) do
+    string
+    |> String.replace(~r/\s+/, " ")
+    |> String.trim()
   end
 end

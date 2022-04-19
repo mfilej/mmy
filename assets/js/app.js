@@ -25,18 +25,33 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+const stateKey = "ridle"
+let state = JSON.parse(localStorage.getItem(stateKey))
+
+let Hooks = {}
+Hooks.Form = {
+  mounted() {
+    let input = this.el.querySelector("input")
+    this.handleEvent("refocus", (_data) => {
+      setTimeout(() => { input.focus() }, 200)
+    })
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, {
+  params: {_csrf_token: csrfToken, state: state},
+  hooks: Hooks
+})
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", info => topbar.show())
 window.addEventListener("phx:page-loading-stop", info => topbar.hide())
-window.addEventListener("submit", (info) => {
-  setTimeout(() => {
-    let input = info.target.querySelector(".error") || info.target.querySelector("input")
-    input.focus()
-  }, 100)
+window.addEventListener("phx:save", (info) => {
+  let payload = JSON.stringify(info.detail)
+  localStorage.setItem(stateKey, payload)
+  console.log(payload)
 })
 
 // connect if there are any LiveViews on the page

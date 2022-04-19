@@ -1,15 +1,10 @@
+<div class="space-y-4">
 <div class="bg-zinc-50">
   <img
     class="w-full"
     src={@round.image_url}
     alt="Guess the model, make, and year"
   />
-</div>
-
-<div id="guesses" phx-update="append" class="mt-4 uppercase">
-  <%= for guess <- @guesses do %>
-    <.guess value={guess} />
-  <% end %>
 </div>
 
 <%= if @solved? do %>
@@ -22,7 +17,7 @@
     </svg>
   </div>
 <% else %>
-  <.form let={f} for={@changeset} phx-submit="guess">
+  <.form let={f} for={@changeset} id="form" phx-submit="guess" phx-hook="Form" class="space-y-4">
     <div class="flex gap-x-2 mb-4">
       <.field form={f} field={:make} placeholder="Make" w="w-5/12" />
       <.field form={f} field={:model} placeholder="Model" w="w-5/12" />
@@ -55,3 +50,10 @@
     </button>
   </.form>
 <% end %>
+
+<div id="guesses" class="uppercase">
+  <%= for guess <- @guesses do %>
+    <.guess value={guess} />
+  <% end %>
+</div>
+</div>
