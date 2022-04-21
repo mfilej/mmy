@@ -81,8 +81,16 @@ defmodule RidleWeb.HomeLive do
         guesses = [
           %{
             "id" => Ecto.UUID.generate(),
-            "make" => %{"v" => changes.make, "s" => changes.make == round.make, "d" => nil},
-            "model" => %{"v" => changes.model, "s" => changes.model == round.model, "d" => nil},
+            "make" => %{
+              "v" => changes.make,
+              "s" => part_solved?(changes.make, round.make),
+              "d" => nil
+            },
+            "model" => %{
+              "v" => changes.model,
+              "s" => part_solved?(changes.model, round.model),
+              "d" => nil
+            },
             "year" => %{"v" => changes.year, "s" => year_solved?(round, changes), "d" => year_d}
           }
           | socket.assigns.guesses
@@ -198,7 +206,13 @@ defmodule RidleWeb.HomeLive do
   end
 
   defp solved?(%Game.Round{} = round, changes) do
-    round.make == changes.make && round.model == changes.model && year_solved?(round, changes)
+    part_solved?(changes.make, round.make) &&
+      part_solved?(changes.model, round.model) &&
+      year_solved?(round, changes)
+  end
+
+  defp part_solved?(guess, solution) do
+    String.starts_with?(guess, solution)
   end
 
   defp year_solved?(%Game.Round{year_start: year_start, year_end: year_end}, %{year: year}),
