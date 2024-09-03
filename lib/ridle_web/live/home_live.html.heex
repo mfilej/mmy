@@ -20,7 +20,7 @@
   </p>
   </div>
 <% else %>
-  <.form let={f} for={@changeset} id="form" phx-submit="guess" phx-hook="Form" class="space-y-4">
+  <.form :let={f} for={@changeset} id="form" phx-submit="guess" phx-hook="Form" class="space-y-4">
     <div class="flex gap-x-2 mb-4">
       <.field form={f} field={:make} placeholder="Make" w="w-5/12" />
       <.field form={f} field={:model} placeholder="Model" w="w-5/12" />

@@ -36,23 +36,6 @@ defmodule RidleWeb.HomeLive do
           {[], false}
       end
 
-    initial_guesses = []
-
-    # initial_guesses = [
-    #   %{
-    #     id: "cec590b2-9cd5-4ba7-85e4-c7a50262390f",
-    #     make: %{v: "Aston Martin", s: true, d: nil},
-    #     model: %{v: "DBS", s: false, d: nil},
-    #     year: %{v: "2008", s: false, d: ""}
-    #   },
-    #   %{
-    #     id: "cec590b2-9cd5-4ba7-85e4-c7a50262390e",
-    #     make: %{v: "Ferrari", s: true, d: nil},
-    #     model: %{v: "Testa Rossa", s: true, d: nil},
-    #     year: %{v: "1978", s: false, d: ""}
-    #   }
-    # ]
-
     changeset = guess_changeset()
 
     socket =
@@ -136,8 +119,10 @@ defmodule RidleWeb.HomeLive do
         ~k"bg-rose-50 text-rose-900"
       end
 
+    assigns = assign(assigns, class: class)
+
     ~H"""
-    <div class={"#{@class} flex justify-between items-center py-2 px-3 #{class}"}>
+    <div class={"#{@class} flex justify-between items-center py-2 px-3 #{@class}"}>
       <span><%= @value["v"] %></span>
       <span><%= if d = @value["d"], do: raw(d) %></span>
       <%= if @value["s"] do %>
@@ -170,13 +155,6 @@ defmodule RidleWeb.HomeLive do
     %{form: form, field: field} = assigns
     errors = Keyword.get_values(form.errors, field)
 
-    assigns =
-      assigns
-      |> Map.put_new(:placeholder, nil)
-      |> Map.put_new(:type, "text")
-      |> Map.put_new(:min, nil)
-      |> Map.put_new(:max, nil)
-
     error_class =
       if errors != [] do
         ~k"""
@@ -189,8 +167,19 @@ defmodule RidleWeb.HomeLive do
         ~k"bg-zinc-50 ring-zinc-400 focus:bg-white"
       end
 
+    assigns =
+      assign(assigns,
+        placeholder: nil,
+        type: "text",
+        min: nil,
+        max: nil,
+        form: form,
+        field: field,
+        error_class: error_class
+      )
+
     ~H"""
-    <%= text_input(form, field,
+    <%= text_input(@form, @field,
       placeholder: @placeholder,
       type: @type,
       min: @min,
@@ -200,7 +189,7 @@ defmodule RidleWeb.HomeLive do
         #{@w}
         py-2 px-3 border-0 text-zinc-800 ring-2 ring-inset
         focus:ring-2 focus:ring-zinc-600
-        #{error_class}"
+        #{@error_class}"
     ) %>
     """
   end

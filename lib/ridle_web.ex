@@ -44,7 +44,7 @@ defmodule RidleWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {RidleWeb.LayoutView, "live.html"}
+        layout: {RidleWeb.LayoutView, :live}
 
       unquote(view_helpers())
     end
@@ -88,11 +88,9 @@ defmodule RidleWeb do
       use Phoenix.HTML
 
       alias Phoenix.LiveView.JS
-
-      # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
       import Phoenix.LiveView.Helpers
 
-      # Import basic rendering functionality (render, render_layout, etc)
+      import Phoenix.Component
       import Phoenix.View
 
       import RidleWeb.ErrorHelpers
