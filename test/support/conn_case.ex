@@ -26,6 +26,8 @@ defmodule RidleWeb.ConnCase do
 
       alias RidleWeb.Router.Helpers, as: Routes
 
+      use RidleWeb, :verified_routes
+
       # The default endpoint for testing
       @endpoint RidleWeb.Endpoint
     end

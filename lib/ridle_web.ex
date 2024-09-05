@@ -17,12 +17,16 @@ defmodule RidleWeb do
   and import those modules here.
   """
 
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+
   def controller do
     quote do
       use Phoenix.Controller, namespace: RidleWeb
 
       import Plug.Conn
       alias RidleWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
     end
   end
 
@@ -96,6 +100,17 @@ defmodule RidleWeb do
 
       import RidleWeb.ErrorHelpers
       alias RidleWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: RidleWeb.Endpoint,
+        router: RidleWeb.Router,
+        statics: RidleWeb.static_paths()
     end
   end
 
