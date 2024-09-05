@@ -14,6 +14,7 @@ defmodule RidleWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
+    live "/:id", HomeLive
   end
 
   # Other scopes may use custom stacks.

@@ -35,8 +35,7 @@ defmodule Ridle.MixProject do
     [
       {:phoenix, "~> 1.7.0"},
       {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.12"},
-      {:postgrex, ">= 0.0.0"},
+      {:ecto_sqlite3, "~> 0.16"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_view, "~> 0.19"},

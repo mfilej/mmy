@@ -11,6 +11,8 @@ config :ridle,
   ecto_repos: [Ridle.Repo],
   generators: [binary_id: true]
 
+config :ridle, Ridle.Repo, database: "priv/db.sqlite"
+
 # Configures the endpoint
 config :ridle, RidleWeb.Endpoint,
   url: [host: "localhost"],

@@ -6,25 +6,15 @@ defmodule RidleWeb.HomeLive do
   alias Ridle.Game
 
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    rounds = Game.rounds()
+    {:ok, socket |> stream(:rounds, rounds)}
   end
 
-  def handle_params(%{"now" => now}, _uri, socket) do
-    datetime =
-      case DateTime.from_iso8601(now) do
-        {:ok, datetime, 0} -> datetime
-        {:error, _} -> nil
-      end
+  def handle_params(%{"id" => id}, _uri, socket), do: init(socket, id)
+  def handle_params(_params, _uri, socket), do: init(socket, "1")
 
-    init(socket, datetime)
-  end
-
-  def handle_params(_params, _uri, socket), do: init(socket)
-
-  defp init(socket, datetime \\ nil) do
-    datetime = datetime || DateTime.utc_now()
-
-    %{id: id} = round = Game.current_round(datetime)
+  defp init(socket, id) do
+    %{id: id} = round = Game.round(id)
 
     {guesses, solved?} =
       case get_connect_params(socket) do
@@ -103,7 +93,7 @@ defmodule RidleWeb.HomeLive do
 
   defp guess(assigns) do
     ~H"""
-    <div id={@value["id"]} class="flex gap-x-2 mb-2">
+    <div id={@value["id"]} class="mb-2 flex gap-x-2">
       <.part value={@value["make"]} class="w-5/12" />
       <.part value={@value["model"]} class="w-5/12" />
       <.part value={@value["year"]} class="w-2/12 text-right" />
@@ -122,7 +112,7 @@ defmodule RidleWeb.HomeLive do
     assigns = assign(assigns, class: class)
 
     ~H"""
-    <div class={"#{@class} flex justify-between items-center py-2 px-3 #{@class}"}>
+    <div class={"#{@class} #{@class} flex items-center justify-between px-3 py-2"}>
       <span><%= @value["v"] %></span>
       <span><%= if d = @value["d"], do: raw(d) %></span>
       <%= if @value["s"] do %>

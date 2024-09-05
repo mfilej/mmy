@@ -2,15 +2,12 @@ defmodule Ridle.Game.Round do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "game_rounds" do
     field :make, :string
     field :model, :string
     field :year_start, :integer
     field :year_end, :integer
     field :image_url, :string
-    field :starts_at, :utc_datetime
 
     timestamps()
   end
