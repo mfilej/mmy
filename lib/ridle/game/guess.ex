@@ -30,6 +30,6 @@ defmodule Ridle.Game.Guess do
   defp normalize(string) do
     string
     |> String.downcase()
-    |> String.replace(~r/[^a-z0-9]/, "")
+    |> String.replace(~r/[^a-z0-9\/]/, "")
   end
 end
