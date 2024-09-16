@@ -2,17 +2,19 @@
 // https://tailwindcss.com/docs/configuration
 module.exports = {
   content: [
-    './js/**/*.js',
-    '../lib/*_web.ex',
-    '../lib/*_web/**/*.*ex',
-    '../lib/*_web/**/*.*eex',
-    '../lib/*_web/**/*.*heex',
-    '../lib/*_web/**/*.*leex'
+    "./js/**/*.js",
+    "../lib/*_web.ex",
+    "../lib/*_web/**/*.*ex",
+    "../lib/*_web/**/*.*eex",
+    "../lib/*_web/**/*.*heex",
+    "../lib/*_web/**/*.*leex",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        parking: ['"Parking"', "sans-serif"],
+      },
+    },
   },
-  plugins: [
-    require('@tailwindcss/forms')
-  ]
-}
+  plugins: [require("@tailwindcss/forms")],
+};

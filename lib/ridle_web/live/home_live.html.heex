@@ -1,8 +1,8 @@
 <div class="space-y-4">
   <nav>
-    <ol id="rounds-list" phx-update="stream">
+    <ol id="rounds-list" phx-update="stream" class="flex justify-center gap-2 text-xs">
       <li :for={{dom_id, round} <- @streams.rounds} id={dom_id}>
-        <.link patch={~p"/#{round.id}"}>
+        <.link patch={~p"/#{round.id}"} class="px-2 py-1 bg-gray-200 text-gray-600">
           <%= round.id %>
         </.link>
       </li>
