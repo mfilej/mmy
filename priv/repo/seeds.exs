@@ -10,6 +10,10 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+Ridle.Repo.delete_all(Ridle.Game.Round)
+
+Ecto.Adapters.SQL.query!(Ridle.Repo, "delete from sqlite_sequence where name='game_rounds'")
+
 [
   [
     image_url: "https://i.imgur.com/jDoOi9b.jpg",
@@ -59,6 +63,13 @@
     model: "viper",
     year_end: 1995,
     year_start: 1991
+  ],
+  [
+    image_url: "https://imgur.com/UNdsseF.jpg",
+    make: "fiat",
+    model: "x1/9",
+    year_end: 1982,
+    year_start: 1972
   ]
 ]
 |> Enum.each(fn attrs -> Ridle.Repo.insert!(struct(Ridle.Game.Round, attrs)) end)
