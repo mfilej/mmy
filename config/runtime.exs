@@ -12,6 +12,8 @@ if System.get_env("PHX_SERVER") && System.get_env("RELEASE_NAME") do
   config :ridle, RidleWeb.Endpoint, server: true
 end
 
+config :ridle, Ridle.Repo, database: "#{:code.priv_dir(:ridle) |> to_string()}/db.sqlite"
+
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
