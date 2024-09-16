@@ -14,18 +14,9 @@ defmodule RidleWeb.HomeLive do
   def handle_params(_params, _uri, socket), do: init(socket, "1")
 
   defp init(socket, id) do
-    %{id: id} = round = Game.round(id)
+    round = Game.round(id)
 
-    {guesses, solved?} =
-      case get_connect_params(socket) do
-        %{"state" => %{"id" => ^id, "solved" => solved?, "guesses" => guesses}} ->
-          {guesses, solved?}
-
-        _ ->
-          Logger.debug("Unable to retrieve state from localStorage")
-          {[], false}
-      end
-
+    {guesses, solved?} = {[], false}
     changeset = guess_changeset()
 
     socket =
@@ -77,7 +68,6 @@ defmodule RidleWeb.HomeLive do
           |> assign(:changeset, guess_changeset())
           |> assign(:solved?, solved?)
           |> push_event("refocus", %{})
-          |> push_event("save", %{id: round.id, guesses: guesses, solved: solved?})
 
         {:noreply, socket}
 
