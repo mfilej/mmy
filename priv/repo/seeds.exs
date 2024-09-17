@@ -19,7 +19,7 @@ Ecto.Adapters.SQL.query!(Ridle.Repo, "delete from sqlite_sequence where name='ga
     image_url: "https://i.imgur.com/jDoOi9b.jpg",
     make: "ferrari",
     model: "f355",
-    year_end: 1994,
+    year_end: 1999,
     year_start: 1994
   ],
   [
@@ -53,9 +53,9 @@ Ecto.Adapters.SQL.query!(Ridle.Repo, "delete from sqlite_sequence where name='ga
   [
     image_url: "https://i.imgur.com/FjgtSDH.jpg",
     make: "ford",
-    model: "escort",
+    model: "escort rs cosworth",
     year_end: 1995,
-    year_start: 1990
+    year_start: 1992
   ],
   [
     image_url: "https://i.imgur.com/8icccId.jpg",
@@ -74,13 +74,13 @@ Ecto.Adapters.SQL.query!(Ridle.Repo, "delete from sqlite_sequence where name='ga
   [
     image_url: "https://imgur.com/WfDeaLI.jpg",
     make: "maserati",
-    model: "Quattroporte",
+    model: "quattroporte",
     year_end: 2012,
     year_start: 2003
   ],
   [
     image_url: "https://imgur.com/dW4THOJ.jpg",
-    make: "wolksvagen",
+    make: "volkswagen",
     model: "golf r32",
     year_end: 2004,
     year_start: 2002
