@@ -70,6 +70,27 @@ Ecto.Adapters.SQL.query!(Ridle.Repo, "delete from sqlite_sequence where name='ga
     model: "x1/9",
     year_end: 1982,
     year_start: 1972
+  ],
+  [
+    image_url: "https://imgur.com/WfDeaLI.jpg",
+    make: "maserati",
+    model: "Quattroporte",
+    year_end: 2012,
+    year_start: 2003
+  ],
+  [
+    image_url: "https://imgur.com/dW4THOJ.jpg",
+    make: "wolksvagen",
+    model: "golf r32",
+    year_end: 2004,
+    year_start: 2002
+  ],
+  [
+    image_url: "https://imgur.com/X9W2Hmu.jpg",
+    make: "citroen",
+    model: "ds21",
+    year_end: 1975,
+    year_start: 1955
   ]
 ]
 |> Enum.each(fn attrs -> Ridle.Repo.insert!(struct(Ridle.Game.Round, attrs)) end)
