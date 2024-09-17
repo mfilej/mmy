@@ -62,9 +62,9 @@
     </.form>
   <% end %>
 
-  <div id="guesses" class="uppercase">
-    <%= for guess <- @guesses do %>
-      <.guess value={guess} />
+  <div id="guesses" class="uppercase" phx-update="stream">
+    <%= for {dom_id, guess} <- @streams.guesses do %>
+      <.guess id={dom_id} value={guess} />
     <% end %>
   </div>
 </div>

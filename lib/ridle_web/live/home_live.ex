@@ -7,7 +7,11 @@ defmodule RidleWeb.HomeLive do
 
   def mount(_params, _session, socket) do
     rounds = Game.rounds()
-    {:ok, socket |> stream(:rounds, rounds)}
+
+    {:ok,
+     socket
+     |> stream(:rounds, rounds)
+     |> stream_configure(:guesses, dom_id: &"guess-#{Map.get(&1, "id")}")}
   end
 
   def handle_params(%{"id" => id}, _uri, socket), do: init(socket, id)
@@ -19,10 +23,10 @@ defmodule RidleWeb.HomeLive do
     {guesses, solved?} = {[], false}
     changeset = guess_changeset()
 
-    socket =
-      assign(socket, round: round, guesses: guesses, solved?: solved?, changeset: changeset)
-
-    {:noreply, socket}
+    {:noreply,
+     socket
+     |> assign(round: round, solved?: solved?, changeset: changeset)
+     |> stream(:guesses, guesses, reset: true)}
   end
 
   def handle_event("guess", %{"guess" => params}, socket) do
@@ -42,7 +46,7 @@ defmodule RidleWeb.HomeLive do
               ""
           end
 
-        guesses = [
+        guess =
           %{
             "id" => Ecto.UUID.generate(),
             "make" => %{
@@ -57,14 +61,12 @@ defmodule RidleWeb.HomeLive do
             },
             "year" => %{"v" => changes.year, "s" => year_solved?(round, changes), "d" => year_d}
           }
-          | socket.assigns.guesses
-        ]
 
         solved? = solved?(round, changes)
 
         socket =
           socket
-          |> assign(:guesses, guesses)
+          |> stream_insert(:guesses, guess)
           |> assign(:changeset, guess_changeset())
           |> assign(:solved?, solved?)
           |> push_event("refocus", %{})
@@ -83,7 +85,7 @@ defmodule RidleWeb.HomeLive do
 
   defp guess(assigns) do
     ~H"""
-    <div id={@value["id"]} class="mb-2 flex gap-x-2">
+    <div id={@id} class="mb-2 flex gap-x-2">
       <.part value={@value["make"]} class="w-5/12" />
       <.part value={@value["model"]} class="w-5/12" />
       <.part value={@value["year"]} class="w-2/12 text-right" />
