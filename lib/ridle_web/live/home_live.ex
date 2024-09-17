@@ -6,11 +6,11 @@ defmodule RidleWeb.HomeLive do
   alias Ridle.Game
 
   def mount(_params, _session, socket) do
-    rounds = Game.rounds()
+    rounds = Game.list_round_numbers()
 
     {:ok,
      socket
-     |> stream(:rounds, rounds)
+     |> assign(:rounds, rounds)
      |> stream_configure(:guesses, dom_id: &"guess-#{Map.get(&1, "id")}")}
   end
 
@@ -18,7 +18,7 @@ defmodule RidleWeb.HomeLive do
   def handle_params(_params, _uri, socket), do: init(socket, "1")
 
   defp init(socket, id) do
-    round = Game.round(id)
+    round = Game.find_round(id)
 
     {guesses, solved?} = {[], false}
     changeset = guess_changeset()
