@@ -20,7 +20,7 @@
     <img class="w-full" src={@round.image_url} alt="Guess the model, make, and year" />
   </div>
 
-  <%= if @solved? do %>
+  <%= if false do %>
     <div class="mt-2 flex flex-wrap items-center justify-center text-zinc-900">
       <p class="text-3xl">Correct!</p>
       <svg class="h-10 w-10" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
@@ -31,26 +31,25 @@
       </p>
     </div>
   <% else %>
-    <.form
-      :let={f}
-      for={@changeset}
-      id="form"
-      phx-submit="guess"
-      phx-hook="Form"
-      class="space-y-4"
-    >
+    <.form :let={f} for={@form} id="form" phx-submit="guess" phx-hook="Form" class="space-y-4">
       <div class="mb-4 flex gap-x-2">
-        <.field form={f} field={:make} placeholder="Make" w="w-5/12" />
-        <.field form={f} field={:model} placeholder="Model" w="w-5/12" />
-        <.field
-          form={f}
-          field={:year}
-          type="number"
-          min="1000"
-          max="3000"
-          placeholder="Year"
-          w="w-2/12 text-right placeholder:text-left"
-        />
+        <div class="w-5/12">
+          <.field form={f} field={:make} placeholder="Make" />
+        </div>
+        <div class="w-5/12">
+          <.field form={f} field={:model} placeholder="Model" />
+        </div>
+        <div class="w-2/12">
+          <.field
+            form={f}
+            field={:year}
+            type="number"
+            min="1000"
+            max="3000"
+            placeholder="Year"
+            class="text-right placeholder:text-left"
+          />
+        </div>
       </div>
 
       <button

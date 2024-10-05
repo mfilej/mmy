@@ -24,7 +24,7 @@ defmodule Ridle.Game.Guess do
     |> update_change(:make, &normalize/1)
     |> update_change(:model, &normalize/1)
     |> validate_required(@required_attrs)
-    |> validate_number(:year, less_than: 10_000, greater_than: 1_000)
+    |> validate_number(:year, less_than: 10_000, greater_than: 999)
   end
 
   defp normalize(string) do
