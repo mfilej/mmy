@@ -4,20 +4,12 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <%= csrf_meta_tag() %>
+    <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title suffix="Make, Model, Year">
       <%= assigns[:page_title] %>
     </.live_title>
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
-    <script defer src="https://unpkg.com/alpinejs@3.9.6/dist/cdn.min.js">
-    </script>
-    <script
-      defer
-      phx-track-static
-      type="text/javascript"
-      src={Routes.static_path(@conn, "/assets/app.js")}
-    >
-    </script>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
   </head>
   <body class="">
     <div class="font-parking container mx-auto max-w-lg bg-white">
