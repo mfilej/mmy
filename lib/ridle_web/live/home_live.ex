@@ -26,7 +26,7 @@ defmodule RidleWeb.HomeLive do
   end
 
   def handle_event("guess", %{"guess" => params}, socket) do
-    %{round: round, attempt: attempt} = socket.assigns
+    %{round: _round, attempt: _attempt} = socket.assigns
 
     guess =
       Game.offer_guess(params)
