@@ -9,7 +9,7 @@ defmodule RidleWeb.HomeLive do
     {:ok,
      socket
      |> assign(:rounds, rounds)
-     |> stream_configure(:guesses, dom_id: &"guess-#{Map.get(&1, "id")}")}
+     |> assign(:attempt, 1)}
   end
 
   def handle_params(%{"id" => id}, _uri, socket), do: init(socket, id)
@@ -17,26 +17,46 @@ defmodule RidleWeb.HomeLive do
 
   defp init(socket, id) do
     round = Game.find_round(id)
-    form = to_form(Game.change_guess(%{}))
 
     {:noreply,
-     socket |> stream(:guesses, [], reset: true) |> assign(:form, form) |> assign(:round, round)}
+     socket
+     |> stream(:guesses, [], reset: true)
+     |> assign(:round, round)
+     |> assign_form()}
   end
 
   def handle_event("guess", %{"guess" => params}, socket) do
-    round = socket.assigns.round
+    %{round: round, attempt: attempt} = socket.assigns
 
-    form = to_form(%Game.Guess{} |> Game.change_guess(params))
+    guess =
+      Game.offer_guess(params)
+      |> Ecto.Changeset.apply_action(:validate)
+      |> dbg()
 
-    {:noreply, socket |> assign(:form, form)}
+    case guess do
+      {:ok, guess} ->
+        {:noreply,
+         socket
+         |> stream_insert(:guesses, guess)
+         |> assign_form()}
+
+      {:error, changeset} ->
+        {:noreply, socket |> assign_form(changeset)}
+    end
+  end
+
+  defp assign_form(socket, changeset \\ nil) do
+    changeset = changeset || Game.offer_guess(%{})
+    form = to_form(changeset, id: "guess-#{socket.assigns.attempt}")
+    socket |> assign(:form, form)
   end
 
   defp guess(assigns) do
     ~H"""
     <div id={@id} class="mb-2 flex gap-x-2">
-      <.part value={@value["make"]} class="w-5/12" />
-      <.part value={@value["model"]} class="w-5/12" />
-      <.part value={@value["year"]} class="w-2/12 text-right" />
+      <.part value={@value.make} class="w-5/12" />
+      <.part value={@value.model} class="w-5/12" />
+      <.part value={@value.year} class="w-2/12 text-right" />
     </div>
     """
   end
@@ -48,7 +68,6 @@ defmodule RidleWeb.HomeLive do
       else
         ~k"bg-rose-50 text-rose-900"
       end
-      |> dbg()
 
     assigns = assign(assigns, class: class)
 
@@ -74,14 +93,13 @@ defmodule RidleWeb.HomeLive do
     """
   end
 
-  attr :form, :map, required: true
-  attr :field, :atom, required: true
+  attr :field, :any, required: true
   attr :class, :string, default: nil
   attr :rest, :global
 
   def field(assigns) do
     ~H"""
-    <.input type="text" field={@form[@field]} autocomplete="off" class={@class} {@rest} />
+    <.input type="text" field={@field} autocomplete="off" class={@class} {@rest} />
     """
   end
 
