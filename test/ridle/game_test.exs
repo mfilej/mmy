@@ -10,7 +10,7 @@ defmodule Ridle.GameTest do
 
     now = ~U[2022-04-15 22:55:00Z]
 
-    assert %Game.Round{make: "Opel", model: "Omega", year: 1990} = Game.current_round(now)
+    assert %Game.Round{make: "Opel", model: "Omega", year_start: 1990} = Game.current_round(now)
   end
 
   test "returns newest round that is not in the future" do
@@ -19,7 +19,7 @@ defmodule Ridle.GameTest do
 
     now = ~U[2022-04-15 22:55:00Z]
 
-    assert %Game.Round{make: "Renault", model: "Twingo", year: 1993} = Game.current_round(now)
+    assert %Game.Round{make: "Renault", model: "Twingo", year_start: 1993} = Game.current_round(now)
   end
 
   defp insert_round(starts_at, make, model, year) do
@@ -28,7 +28,8 @@ defmodule Ridle.GameTest do
         starts_at: starts_at,
         make: make,
         model: model,
-        year: year,
+        year_start: year,
+        year_end: year,
         image_url: "http://localhost/image.jpg"
       }
       |> Ridle.Repo.insert()

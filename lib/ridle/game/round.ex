@@ -8,6 +8,7 @@ defmodule Ridle.Game.Round do
     field :year_start, :integer
     field :year_end, :integer
     field :image_url, :string
+    field :starts_at, :utc_datetime
 
     timestamps()
   end
