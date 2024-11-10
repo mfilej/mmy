@@ -14,7 +14,7 @@ defmodule Ridle.Game do
     |> Repo.all()
   end
 
-  def change_guess(guess \\ %Guess{}, attrs) do
-    guess |> Guess.changeset(attrs)
+  def offer_guess(attrs) do
+    Guess.new() |> Guess.changeset(attrs)
   end
 end
