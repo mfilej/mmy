@@ -1,21 +1,20 @@
-defmodule Ridle.Game.Guess do
+defmodule Ridle.Game.GuessAttempt do
   use Ecto.Schema
 
   import Ecto.Changeset
 
   @primary_key false
   embedded_schema do
-    field :id, :binary_id
     field :make, :string
     field :model, :string
     field :year, :integer
   end
 
   @castable_attrs ~w[make model year]a
-  @required_attrs ~w[id make model year]a
+  @required_attrs ~w[ make model year]a
 
   def new do
-    %__MODULE__{id: Ecto.UUID.generate()}
+    %__MODULE__{}
   end
 
   def changeset(schema, attrs) do

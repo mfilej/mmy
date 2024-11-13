@@ -42,7 +42,6 @@ defmodule Ridle.MixProject do
       {:phoenix_live_reload, "~> 1.5"},
       {:phoenix_live_dashboard, "~> 0.8.4"},
       {:phoenix_view, "~> 2.0"},
-      {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
@@ -50,7 +49,9 @@ defmodule Ridle.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:ex_machina, "~> 2.8.0", only: :test},
+      {:floki, ">= 0.30.0", only: :test}
     ]
   end
 

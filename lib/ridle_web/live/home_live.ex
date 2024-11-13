@@ -20,24 +20,21 @@ defmodule RidleWeb.HomeLive do
 
     {:noreply,
      socket
-     |> stream(:guesses, [], reset: true)
+     |> stream(:outcomes, [], reset: true)
      |> assign(:round, round)
+     |> assign(:solved?, false)
      |> assign_form()}
   end
 
-  def handle_event("guess", %{"guess" => params}, socket) do
-    %{round: _round, attempt: _attempt} = socket.assigns
+  def handle_event("guess", %{"guess_attempt" => params}, socket) do
+    %{round: round, attempt: _attempt} = socket.assigns
 
-    guess =
-      Game.offer_guess(params)
-      |> Ecto.Changeset.apply_action(:validate)
-      |> dbg()
-
-    case guess do
-      {:ok, guess} ->
+    case Game.offer_guess(round, params) do
+      {:ok, outcome} ->
         {:noreply,
          socket
-         |> stream_insert(:guesses, guess)
+         |> stream_insert(:outcomes, outcome)
+         |> assign(:solved?, outcome.correct?)
          |> assign_form()}
 
       {:error, changeset} ->
@@ -46,7 +43,7 @@ defmodule RidleWeb.HomeLive do
   end
 
   defp assign_form(socket, changeset \\ nil) do
-    changeset = changeset || Game.offer_guess(%{})
+    changeset = changeset || Game.initial_guess()
     form = to_form(changeset, id: "guess-#{socket.assigns.attempt}")
     socket |> assign(:form, form)
   end
@@ -54,16 +51,16 @@ defmodule RidleWeb.HomeLive do
   defp guess(assigns) do
     ~H"""
     <div id={@id} class="mb-2 flex gap-x-2">
-      <.part value={@value.make} class="w-5/12" />
-      <.part value={@value.model} class="w-5/12" />
-      <.part value={@value.year} class="w-2/12 text-right" />
+      <.part field={@outcome.make} class="w-5/12" />
+      <.part field={@outcome.model} class="w-5/12" />
+      <.part field={@outcome.year} class="w-2/12 text-right" />
     </div>
     """
   end
 
   def part(assigns) do
     class =
-      if assigns.value["s"] do
+      if assigns.field.correct? do
         ~k"bg-green-100 text-green-800"
       else
         ~k"bg-rose-50 text-rose-900"
@@ -73,9 +70,9 @@ defmodule RidleWeb.HomeLive do
 
     ~H"""
     <div class={"#{@class} #{@class} flex items-center justify-between px-3 py-2"}>
-      <span><%= @value["v"] %></span>
-      <span><%= if d = @value["d"], do: raw(d) %></span>
-      <%= if @value["s"] do %>
+      <span><%= @field.value %></span>
+      <span><%= hint(@field.hint) %></span>
+      <%= if @field.correct? do %>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5"
@@ -93,11 +90,15 @@ defmodule RidleWeb.HomeLive do
     """
   end
 
+  defp hint(:gt), do: raw("&uarr;")
+  defp hint(:lt), do: raw("&darr;")
+  defp hint(nil), do: ""
+
   attr :field, :any, required: true
   attr :class, :string, default: nil
   attr :rest, :global
 
-  def field(assigns) do
+  defp field(assigns) do
     ~H"""
     <.input type="text" field={@field} autocomplete="off" class={@class} {@rest} />
     """
