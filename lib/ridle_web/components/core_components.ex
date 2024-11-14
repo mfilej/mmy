@@ -195,17 +195,11 @@ defmodule RidleWeb.CoreComponents do
     doc: "the arbitrary HTML attributes to apply to the form tag"
 
   slot :inner_block, required: true
-  slot :actions, doc: "the slot for form actions, such as a submit button"
 
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
-        <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
-          <%= render_slot(action, f) %>
-        </div>
-      </div>
+      <%= render_slot(@inner_block, f) %>
     </.form>
     """
   end
@@ -375,11 +369,10 @@ defmodule RidleWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "block w-full border-0 px-3 py-2 ring-2 ring-inset",
-          "focus:ring-2",
-          @errors == [] && "text-zinc-800 ring-zinc-400 focus:ring-zinc-600",
+          "block w-full border-0 px-3 py-2 outline-none ring-0",
+          @errors == [] && "text-zinc-800",
           @errors != [] &&
-            "bg-rose-100 ring-rose-300 placeholder:text-rose-400 focus:border-rose-400 focus:bg-white focus:ring-rose-800 focus:placeholder:text-zinc-500"
+            "bg-rose-100 ring-rose-300 placeholder:text-rose-400 focus:placeholder:text-zinc-500"
         ]}
         {@rest}
       />

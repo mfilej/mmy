@@ -31,11 +31,16 @@ let state = JSON.parse(localStorage.getItem(stateKey));
 let Hooks = {};
 Hooks.Form = {
   mounted() {
-    let input = this.el.querySelector("input");
+    let inputs = this.el.querySelectorAll("input");
+
     this.handleEvent("refocus", (_data) => {
+      let firstUnsolvedInput = Array.from(inputs).find((input) => {
+        return !input.closest("[data-solved]");
+      });
+
       setTimeout(() => {
-        input.focus();
-      }, 200);
+        firstUnsolvedInput.focus();
+      }, 50);
     });
   },
 };

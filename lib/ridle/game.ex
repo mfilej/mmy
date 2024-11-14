@@ -15,11 +15,12 @@ defmodule Ridle.Game do
     |> Repo.all()
   end
 
-  def initial_guess do
-    GuessAttempt.new() |> GuessAttempt.changeset(%{})
+  def change_guess_attempt(attrs) do
+    GuessAttempt.new()
+    |> GuessAttempt.changeset(attrs)
   end
 
-  def offer_guess(%Round{} = round, attrs) do
+  def offer_guess(%Round{} = round, attempt_number, attrs) do
     changeset =
       GuessAttempt.new()
       |> GuessAttempt.changeset(attrs)
@@ -27,16 +28,19 @@ defmodule Ridle.Game do
 
     case changeset do
       {:ok, %GuessAttempt{} = attempt} ->
-        {:ok, to_outcome(round, attempt)}
+        {:ok, to_outcome(round, attempt_number, attempt)}
 
       {:error, changeset} ->
         {:error, changeset}
     end
   end
 
-  defp to_outcome(%Round{} = round, %GuessAttempt{make: make, model: model, year: year}) do
+  defp to_outcome(%Round{} = round, attempt_number, attempt) do
+    %{make: make, model: model, year: year} = attempt
+
     outcome =
       %GuessOutcome{
+        id: attempt_number,
         make: outcome(:make, round, make),
         model: outcome(:model, round, model),
         year: outcome(:year, round, year)
@@ -60,6 +64,10 @@ defmodule Ridle.Game do
   end
 
   defp outcome(field, %Round{} = round, guessed_value) do
-    %{value: guessed_value, correct?: guessed_value == Map.fetch!(round, field), hint: nil}
+    %GuessOutcome.Field{
+      value: guessed_value,
+      correct?: guessed_value == Map.fetch!(round, field),
+      hint: nil
+    }
   end
 end

@@ -1,5 +1,6 @@
 // See the Tailwind configuration guide for advanced usage
 // https://tailwindcss.com/docs/configuration
+
 module.exports = {
   content: [
     "./js/**/*.js",
@@ -10,11 +11,13 @@ module.exports = {
     "../lib/*_web/**/*.*leex",
   ],
   theme: {
+    data: {
+      solved: 'solved~="true"',
+    },
     extend: {
       fontFamily: {
-        parking: ['"Parking"', "sans-serif"],
+        parking: ["Parking", "sans-serif"],
       },
     },
   },
-  plugins: [require("@tailwindcss/forms")],
 };
