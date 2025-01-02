@@ -32,7 +32,7 @@ defmodule RidleWeb.HomeLiveTest do
     html =
       view
       |> form("#guess-attempt-form", %{
-        "guess_attempt" => %{"make" => "Porsche", "model" => "911", "year" => 1970}
+        "guess_attempt" => %{"make" => "BMW", "model" => "M3", "year" => "1980"}
       })
       |> render_submit()
 
@@ -41,7 +41,7 @@ defmodule RidleWeb.HomeLiveTest do
     html =
       view
       |> form("#guess-attempt-form", %{
-        "guess_attempt" => %{"make" => "Porsche", "model" => "911", "year" => 1970}
+        "guess_attempt" => %{"make" => "Ferrari", "model" => "F40", "year" => "1990"}
       })
       |> render_submit()
 

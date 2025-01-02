@@ -115,8 +115,10 @@ defmodule RidleWeb.HomeLive do
   defp hint(:lt), do: raw("&darr;")
   defp hint(nil), do: ""
 
-  attr :field, :any, required: true
+  attr :form, Phoenix.HTML.Form, required: true
+  attr :field, :atom, required: true
   attr :solved, :boolean, default: false
+  attr :disabled, :boolean
   attr :w, :string, required: true
   attr :type, :string, default: "text"
   attr :rest, :global
@@ -132,7 +134,10 @@ defmodule RidleWeb.HomeLive do
         "data-solved:ring-emerald-500 data-solved-focus:ring-emerald-500"
       ]}
     >
-      <.input type={@type} field={@field} phx-debounce="100" autocomplete="off" {@rest} />
+      <.input type={@type} field={@form[@field]} disabled={@solved} phx-debounce="100" autocomplete="off" {@rest} />
+      <%= if @solved do %>
+        <input type="hidden" name={Phoenix.HTML.Form.input_name(@form, @field)} value={Phoenix.HTML.Form.input_value(@form, @field)} />
+      <% end %>
     </div>
     """
   end

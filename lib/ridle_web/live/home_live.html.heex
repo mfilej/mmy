@@ -29,10 +29,11 @@
     class="flex flex-col space-y-6"
   >
     <div class="px-[3px] flex gap-x-3">
-      <.field field={@form[:make]} solved={elem(@progress, 1)} w="w-5/12" placeholder="Make" />
-      <.field field={@form[:model]} solved={elem(@progress, 2)} w="w-5/12" placeholder="Model" />
+      <.field form={@form} field={:make} solved={elem(@progress, 1)} w="w-5/12" placeholder="Make" />
+      <.field form={@form} field={:model} solved={elem(@progress, 2)} w="w-5/12" placeholder="Model" />
       <.field
-        field={@form[:year]}
+        form={@form}
+        field={:year}
         solved={elem(@progress, 3)}
         type="number"
         w="w-2/12"
