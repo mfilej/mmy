@@ -39,7 +39,7 @@ Hooks.Form = {
       });
 
       setTimeout(() => {
-        firstUnsolvedInput.focus();
+        firstUnsolvedInput && firstUnsolvedInput.focus();
       }, 50);
     });
   },

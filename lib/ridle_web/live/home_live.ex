@@ -137,8 +137,8 @@ defmodule RidleWeb.HomeLive do
     """
   end
 
-  defp solved?({true, true, true}), do: true
-  defp solved?(_), do: false
+  defp solved?({_, true, true, true}), do: true
+  defp solved?({_, _, _, _}), do: false
 
   defp sigil_k(string, []) do
     string
