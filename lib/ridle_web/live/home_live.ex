@@ -70,7 +70,7 @@ defmodule RidleWeb.HomeLive do
   attr :w, :string, required: true
   attr :right, :boolean, default: false
 
-  def part(assigns) do
+  defp part(assigns) do
     class =
       if assigns.field.correct? do
         ~k"bg-emerald-100 text-emerald-800"
