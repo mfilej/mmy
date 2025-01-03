@@ -12,7 +12,7 @@ module.exports = {
   ],
   theme: {
     data: {
-      solved: 'solved~="true"',
+      correct: 'correct~="true"',
     },
     extend: {
       fontFamily: {

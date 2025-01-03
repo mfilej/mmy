@@ -3,6 +3,8 @@ defmodule RidleWeb.HomeLive do
 
   alias Ridle.Game
 
+  @rounds 5
+
   def mount(_params, _session, socket) do
     rounds = Game.list_round_numbers()
 
@@ -23,6 +25,10 @@ defmodule RidleWeb.HomeLive do
      |> assign(:progress, {1, false, false, false})
      |> assign_form(changeset)}
   end
+
+  def handle_event("guess", _, %{assigns: %{progress: {attempts, _, _, _}}} = socket)
+      when attempts > @rounds,
+      do: {:noreply, socket}
 
   def handle_event("guess", %{"guess_attempt" => params}, socket) do
     %{round: round, progress: {attempt, _, _, _}} = socket.assigns
@@ -71,24 +77,15 @@ defmodule RidleWeb.HomeLive do
   attr :right, :boolean, default: false
 
   defp part(assigns) do
-    class =
-      if assigns.field.correct? do
-        ~k"bg-emerald-100 text-emerald-800"
-      else
-        ~k"bg-rose-50 text-rose-900"
-      end
-
-    assigns = assign(assigns, class: class)
-
     ~H"""
     <div
-      data-solved={@field.correct? && "true"}
+      data-correct={@field.correct? && "true"}
       class={[
         @w,
         @right && "text-right",
         "flex items-center justify-between px-3 py-2",
         "bg-rose-100 text-rose-800",
-        "data-solved:bg-emerald-100 data-solved:text-emerald-800"
+        "data-correct:bg-emerald-100 data-correct:text-emerald-800"
       ]}
     >
       <span><%= @field.value %></span>
@@ -117,7 +114,8 @@ defmodule RidleWeb.HomeLive do
 
   attr :form, Phoenix.HTML.Form, required: true
   attr :field, :atom, required: true
-  attr :solved, :boolean, default: false
+  attr :correct, :boolean, default: false
+  attr :failed, :boolean, default: false
   attr :disabled, :boolean
   attr :w, :string, required: true
   attr :type, :string, default: "text"
@@ -126,18 +124,29 @@ defmodule RidleWeb.HomeLive do
   defp field(assigns) do
     ~H"""
     <div
-      data-solved={@solved && "true"}
+      data-correct={@correct && "true"}
+      data-failed={@failed && "true"}
       class={[
         "#{@w} ring-2 ring-gray-400 ring-offset-1",
         "focus-within:ring-gray-600",
         "[&_input[type=number]]:text-right placeholder:[&_input[type=number]]:text-left",
-        "data-solved:ring-emerald-500 data-solved-focus:ring-emerald-500"
+        "data-correct:ring-emerald-500 focus-within:data-correct:ring-emerald-500"
       ]}
     >
-      <.input type={@type} field={@form[@field]} disabled={@solved} phx-debounce="100" autocomplete="off" {@rest} />
-      <%= if @solved do %>
-        <input type="hidden" name={Phoenix.HTML.Form.input_name(@form, @field)} value={Phoenix.HTML.Form.input_value(@form, @field)} />
-      <% end %>
+      <.input
+        type={@type}
+        field={@form[@field]}
+        disabled={@correct || @failed}
+        phx-debounce="100"
+        autocomplete="off"
+        {@rest}
+      />
+      <input
+        :if={@correct}
+        type="hidden"
+        name={Phoenix.HTML.Form.input_name(@form, @field)}
+        value={Phoenix.HTML.Form.input_value(@form, @field)}
+      />
     </div>
     """
   end
@@ -145,9 +154,14 @@ defmodule RidleWeb.HomeLive do
   defp solved?({_, true, true, true}), do: true
   defp solved?({_, _, _, _}), do: false
 
-  defp sigil_k(string, []) do
-    string
-    |> String.replace(~r/\s+/, " ")
-    |> String.trim()
+  defp game_over?({round, _, _, _}) when round > @rounds, do: true
+  defp game_over?({_, _, _, _}), do: false
+
+  defp data_game_value(progress) do
+    cond do
+      solved?(progress) -> "solved"
+      game_over?(progress) -> "over"
+      true -> "playing"
+    end
   end
 end

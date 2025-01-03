@@ -47,4 +47,28 @@ defmodule RidleWeb.HomeLiveTest do
 
     assert [_, _] = Floki.find(html, "#guesses>div")
   end
+
+  test "fails after 5 wrong guesses", %{conn: conn} do
+    insert(:round, id: 46, make: "porsche", model: "911", year_start: 1970, year_end: 1975)
+
+    {:ok, view, _html} = live(conn, "/46")
+
+    view |> guess("BMW", "M3", "1980")
+    view |> guess("Ferrari", "Testarossa", "1980")
+    view |> guess("Ford", "Escort", "1980")
+    view |> guess("Alfa Romeo", "Spider", "1980")
+    html = view |> guess("Porsche", "911", "1978")
+
+    assert [_, _, _, _, _] = Floki.find(html, "#guesses>div")
+
+    assert html =~ "Game Over"
+  end
+
+  defp guess(view, make, model, year) do
+    view
+    |> form("#guess-attempt-form", %{
+      "guess_attempt" => %{"make" => make, "model" => model, "year" => year}
+    })
+    |> render_submit()
+  end
 end

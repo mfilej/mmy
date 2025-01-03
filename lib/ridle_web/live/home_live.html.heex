@@ -1,4 +1,4 @@
-<div class="space-y-6" data-solved={solved?(@progress) && "true"}>
+<div class="space-y-6" data-game={data_game_value(@progress)}>
   <nav>
     <ol id="rounds-list" class="flex justify-center gap-2 text-xs">
       <li :for={number <- @rounds}>
@@ -29,43 +29,61 @@
     class="flex flex-col space-y-6"
   >
     <div class="px-[3px] flex gap-x-3">
-      <.field form={@form} field={:make} solved={elem(@progress, 1)} w="w-5/12" placeholder="Make" />
-      <.field form={@form} field={:model} solved={elem(@progress, 2)} w="w-5/12" placeholder="Model" />
+      <.field
+        form={@form}
+        field={:make}
+        correct={elem(@progress, 1)}
+        failed={game_over?(@progress)}
+        w="w-5/12"
+        placeholder="Make"
+      />
+      <.field
+        form={@form}
+        field={:model}
+        correct={elem(@progress, 2)}
+        failed={game_over?(@progress)}
+        w="w-5/12"
+        placeholder="Model"
+      />
       <.field
         form={@form}
         field={:year}
-        solved={elem(@progress, 3)}
+        correct={elem(@progress, 3)}
+        failed={game_over?(@progress)}
         type="number"
         w="w-2/12"
         placeholder="Year"
       />
     </div>
 
-    <%= if !solved?(@progress) do %>
-      <button
-        type="submit"
-        class="flex w-full justify-center bg-zinc-700 px-5 py-2 text-xl font-medium text-zinc-50"
-      >
-        <span class="pr-1">Guess</span>
-        <svg
-          class="size-6 translate-y-[3px] fill-white"
-          viewBox="0 0 28 28"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M10.5195 21.5557C11.0908 21.5557 11.4688 21.1689 11.4688 20.624C11.4688 20.3428 11.3545 20.1318 11.1875 19.9561L8.91992 17.75L7.37305 16.4492L9.41211 16.5371H20.3896C22.5869 16.5371 23.5186 15.5439 23.5186 13.3906V8.17871C23.5186 5.98145 22.5869 5.0498 20.3896 5.0498H15.5117C14.9404 5.0498 14.5361 5.48047 14.5361 6.00781C14.5361 6.53516 14.9316 6.96582 15.5117 6.96582H20.3457C21.2422 6.96582 21.6201 7.34375 21.6201 8.23145V13.3291C21.6201 14.2344 21.2334 14.6123 20.3457 14.6123H9.41211L7.37305 14.709L8.91992 13.3994L11.1875 11.1934C11.3545 11.0264 11.4688 10.8154 11.4688 10.5254C11.4688 9.98047 11.0908 9.59375 10.5195 9.59375C10.2822 9.59375 10.0186 9.69922 9.8252 9.89258L4.78027 14.8584C4.57812 15.0518 4.47266 15.3154 4.47266 15.5791C4.47266 15.834 4.57812 16.0977 4.78027 16.291L9.8252 21.2656C10.0186 21.4502 10.2822 21.5557 10.5195 21.5557Z" />
-        </svg>
-      </button>
-    <% end %>
-  </.simple_form>
-
-  <%= if solved?(@progress) do %>
-    <div class="mt-2 flex flex-wrap items-center justify-center text-zinc-900">
-      <p class="text-3xl">Correct!</p>
-      <p class="basis-full text-center text-sm uppercase text-zinc-600">
+    <div class="hidden text-center text-zinc-700 [[data-game=over]_&]:block">
+      <p class="text-3xl font-bold">Game Over</p>
+      <p class="basis-full text-sm uppercase">
         <%= @round.make %> <%= @round.model %> <%= @round.year_start %>–<%= @round.year_end %>
       </p>
     </div>
-  <% end %>
+
+    <button
+      type="submit"
+      class="hidden w-full justify-center bg-zinc-700 px-5 py-2 text-xl font-medium text-zinc-50 [[data-game=playing]_&]:flex"
+    >
+      <span class="pr-1">Guess</span>
+      <svg
+        class="size-6 translate-y-[3px] fill-white"
+        viewBox="0 0 28 28"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M10.5195 21.5557C11.0908 21.5557 11.4688 21.1689 11.4688 20.624C11.4688 20.3428 11.3545 20.1318 11.1875 19.9561L8.91992 17.75L7.37305 16.4492L9.41211 16.5371H20.3896C22.5869 16.5371 23.5186 15.5439 23.5186 13.3906V8.17871C23.5186 5.98145 22.5869 5.0498 20.3896 5.0498H15.5117C14.9404 5.0498 14.5361 5.48047 14.5361 6.00781C14.5361 6.53516 14.9316 6.96582 15.5117 6.96582H20.3457C21.2422 6.96582 21.6201 7.34375 21.6201 8.23145V13.3291C21.6201 14.2344 21.2334 14.6123 20.3457 14.6123H9.41211L7.37305 14.709L8.91992 13.3994L11.1875 11.1934C11.3545 11.0264 11.4688 10.8154 11.4688 10.5254C11.4688 9.98047 11.0908 9.59375 10.5195 9.59375C10.2822 9.59375 10.0186 9.69922 9.8252 9.89258L4.78027 14.8584C4.57812 15.0518 4.47266 15.3154 4.47266 15.5791C4.47266 15.834 4.57812 16.0977 4.78027 16.291L9.8252 21.2656C10.0186 21.4502 10.2822 21.5557 10.5195 21.5557Z" />
+      </svg>
+    </button>
+  </.simple_form>
+
+  <div
+    :if={solved?(@progress)}
+    class="mt-2 flex flex-wrap items-center justify-center text-zinc-900"
+  >
+    <p class="text-3xl">Correct!</p>
+  </div>
 
   <div id="guesses" class="uppercase" phx-update="stream">
     <%= for {dom_id, outcome} <- @streams.outcomes do %>
