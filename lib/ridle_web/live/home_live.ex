@@ -108,8 +108,8 @@ defmodule RidleWeb.HomeLive do
     """
   end
 
-  defp hint(:gt), do: raw("&uarr;")
-  defp hint(:lt), do: raw("&darr;")
+  defp hint(:lt), do: raw("&uarr;")
+  defp hint(:gt), do: raw("&darr;")
   defp hint(nil), do: ""
 
   attr :form, Phoenix.HTML.Form, required: true
