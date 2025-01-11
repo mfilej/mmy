@@ -3,7 +3,7 @@ defmodule RidleWeb.HomeLive do
 
   alias Ridle.Game
 
-  @rounds 5
+  @attempts 5
 
   def mount(_params, _session, socket) do
     rounds = Game.list_round_numbers()
