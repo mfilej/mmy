@@ -22,12 +22,12 @@ defmodule RidleWeb.HomeLive do
      socket
      |> stream(:outcomes, [], reset: true)
      |> assign(:round, round)
-     |> assign(:progress, {1, false, false, false})
+     |> assign_progress(1)
      |> assign_form(changeset)}
   end
 
   def handle_event("guess", _, %{assigns: %{progress: {attempts, _, _, _}}} = socket)
-      when attempts > @rounds,
+      when attempts > @attempts,
       do: {:noreply, socket}
 
   def handle_event("guess", %{"guess_attempt" => params}, socket) do
@@ -38,10 +38,7 @@ defmodule RidleWeb.HomeLive do
         {:noreply,
          socket
          |> stream_insert(:outcomes, outcome, at: 0)
-         |> assign(
-           :progress,
-           {attempt + 1, outcome.make.correct?, outcome.model.correct?, outcome.year.correct?}
-         )
+         |> assign_progress(attempt + 1, outcome)
          |> push_event("refocus", %{})}
 
       {:error, changeset} ->
@@ -57,6 +54,22 @@ defmodule RidleWeb.HomeLive do
   defp assign_form(socket, changeset) do
     form = to_form(changeset)
     socket |> assign(:form, form)
+  end
+
+  defp assign_progress(
+         socket,
+         attempts_left,
+         outcome \\ nil
+       ) do
+    progress =
+      if outcome do
+        {attempts_left, outcome.make.correct?, outcome.model.correct?, outcome.year.correct?}
+      else
+        {attempts_left, false, false, false}
+      end
+
+    socket
+    |> assign(:progress, progress)
   end
 
   attr :id, :string, required: true
@@ -154,7 +167,7 @@ defmodule RidleWeb.HomeLive do
   defp solved?({_, true, true, true}), do: true
   defp solved?({_, _, _, _}), do: false
 
-  defp over?({round, _, _, _}) when round > @rounds, do: true
+  defp over?({round, _, _, _}) when round > @attempts, do: true
   defp over?({_, _, _, _}), do: false
 
   defp data_round_value(progress) do
