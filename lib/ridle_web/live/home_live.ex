@@ -154,13 +154,13 @@ defmodule RidleWeb.HomeLive do
   defp solved?({_, true, true, true}), do: true
   defp solved?({_, _, _, _}), do: false
 
-  defp game_over?({round, _, _, _}) when round > @rounds, do: true
-  defp game_over?({_, _, _, _}), do: false
+  defp over?({round, _, _, _}) when round > @rounds, do: true
+  defp over?({_, _, _, _}), do: false
 
-  defp data_game_value(progress) do
+  defp data_round_value(progress) do
     cond do
       solved?(progress) -> "solved"
-      game_over?(progress) -> "over"
+      over?(progress) -> "over"
       true -> "playing"
     end
   end

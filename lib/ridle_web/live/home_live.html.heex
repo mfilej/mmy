@@ -1,4 +1,4 @@
-<div class="space-y-6" data-game={data_game_value(@progress)}>
+<div class="space-y-6" data-round={data_round_value(@progress)}>
   <nav>
     <ol id="rounds-list" class="flex justify-center gap-2 text-xs">
       <li :for={number <- @rounds}>
@@ -33,7 +33,7 @@
         form={@form}
         field={:make}
         correct={elem(@progress, 1)}
-        failed={game_over?(@progress)}
+        failed={over?(@progress)}
         w="w-5/12"
         placeholder="Make"
       />
@@ -41,7 +41,7 @@
         form={@form}
         field={:model}
         correct={elem(@progress, 2)}
-        failed={game_over?(@progress)}
+        failed={over?(@progress)}
         w="w-5/12"
         placeholder="Model"
       />
@@ -49,23 +49,16 @@
         form={@form}
         field={:year}
         correct={elem(@progress, 3)}
-        failed={game_over?(@progress)}
+        failed={over?(@progress)}
         type="number"
         w="w-2/12"
         placeholder="Year"
       />
     </div>
 
-    <div class="hidden text-center text-zinc-700 [[data-game=over]_&]:block">
-      <p class="text-3xl font-bold">Game Over</p>
-      <p class="basis-full text-sm uppercase">
-        <%= @round.make %> <%= @round.model %> <%= @round.year_start %>–<%= @round.year_end %>
-      </p>
-    </div>
-
     <button
       type="submit"
-      class="hidden w-full justify-center bg-zinc-700 px-5 py-2 text-xl font-medium text-zinc-50 [[data-game=playing]_&]:flex"
+      class="hidden w-full justify-center bg-zinc-700 px-5 py-2 text-xl font-medium text-zinc-50 [[data-round=playing]_&]:flex"
     >
       <span class="pr-1">Guess</span>
       <svg
@@ -78,11 +71,12 @@
     </button>
   </.simple_form>
 
-  <div
-    :if={solved?(@progress)}
-    class="mt-2 flex flex-wrap items-center justify-center text-zinc-900"
-  >
-    <p class="text-3xl">Correct!</p>
+  <div class="text-center text-zinc-800">
+    <p class="hidden text-3xl font-bold [[data-round=over]_&]:block">Game Over</p>
+    <p class="hidden text-3xl [[data-round=solved]_&]:block">Correct!</p>
+    <p :if={over?(@progress) || solved?(@progress)} class="text-sm uppercase">
+      <%= @round.make %> <%= @round.model %> <%= @round.year_start %>–<%= @round.year_end %>
+    </p>
   </div>
 
   <div id="guesses" class="uppercase" phx-update="stream">
