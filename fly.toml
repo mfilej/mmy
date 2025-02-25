@@ -16,7 +16,7 @@ kill_timeout = "5s"
 
 [env]
   ECTO_IPV6 = "true"
-  PHX_HOST = "ridle.fly.dev"
+  PHX_HOST = "mmy.filej.net"
   PORT = "8080"
 
 [[services]]
