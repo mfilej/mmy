@@ -34,7 +34,7 @@ defmodule Ridle.MixProject do
   defp deps do
     [
       {:tidewave, "~> 0.5", only: [:dev]},
-      {:phoenix, "~> 1.7.0"},
+      {:phoenix, "~> 1.8.0"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sqlite3, "~> 0.16"},
       {:phoenix_html, "~> 4.1"},
