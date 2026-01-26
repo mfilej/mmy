@@ -29,23 +29,23 @@ defmodule RidleWeb.HomeLiveTest do
 
     {:ok, view, _html} = live(conn, "/46")
 
-    html =
-      view
-      |> form("#guess-attempt-form", %{
-        "guess_attempt" => %{"make" => "BMW", "model" => "M3", "year" => "1980"}
-      })
-      |> render_submit()
+    view
+    |> form("#guess-attempt-form", %{
+      "guess_attempt" => %{"make" => "BMW", "model" => "M3", "year" => "1980"}
+    })
+    |> render_submit()
 
-    assert [_] = Floki.find(html, "#guesses>div")
+    html = render(view)
+    assert [_] = find_guesses(html)
 
-    html =
-      view
-      |> form("#guess-attempt-form", %{
-        "guess_attempt" => %{"make" => "Ferrari", "model" => "F40", "year" => "1990"}
-      })
-      |> render_submit()
+    view
+    |> form("#guess-attempt-form", %{
+      "guess_attempt" => %{"make" => "Ferrari", "model" => "F40", "year" => "1990"}
+    })
+    |> render_submit()
 
-    assert [_, _] = Floki.find(html, "#guesses>div")
+    html = render(view)
+    assert [_, _] = find_guesses(html)
   end
 
   test "fails after 5 wrong guesses", %{conn: conn} do
@@ -59,7 +59,7 @@ defmodule RidleWeb.HomeLiveTest do
     view |> guess("Alfa Romeo", "Spider", "1980")
     html = view |> guess("Porsche", "911", "1978")
 
-    assert [_, _, _, _, _] = Floki.find(html, "#guesses>div")
+    assert [_, _, _, _, _] = find_guesses(html)
 
     assert html =~ "Game Over"
   end
@@ -70,5 +70,12 @@ defmodule RidleWeb.HomeLiveTest do
       "guess_attempt" => %{"make" => make, "model" => model, "year" => year}
     })
     |> render_submit()
+    |> then(fn _ -> render(view) end)
+  end
+
+  defp find_guesses(html) do
+    html
+    |> Floki.parse_document!()
+    |> Floki.find("#guesses>div")
   end
 end
