@@ -1,4 +1,7 @@
 [tools]
-elixir = "1.18.1-otp-27"
-erlang = "27.2"
+elixir = "1.19.5-otp-28"
+erlang = "28.3.1"
 flyctl = "latest"
+
+[tasks.deploy]
+run = "fly deploy"
