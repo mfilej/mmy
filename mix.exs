@@ -9,6 +9,12 @@ defmodule Ridle.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
+      releases: [
+        ridle: [
+          include_executables_for: [:unix],
+          overlays: "rel/overlays"
+        ]
+      ],
       aliases: aliases(),
       deps: deps()
     ]
