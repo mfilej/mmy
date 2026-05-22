@@ -17,7 +17,10 @@ defmodule Ridle.Release do
     load_app()
     migrate()
     seeds = Application.app_dir(:ridle, "priv/repo/seeds.exs")
-    Code.eval_file(seeds)
+
+    for repo <- repos() do
+      {:ok, _, _} = Ecto.Migrator.with_repo(repo, fn _repo -> Code.eval_file(seeds) end)
+    end
   end
 
   def rollback(repo, version) do
