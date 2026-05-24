@@ -46,7 +46,7 @@ defmodule Ridle.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_view, "~> 1.0.0-rc.6", override: true},
-      {:phoenix_live_reload, "~> 1.5"},
+      {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_dashboard, "~> 0.8.4"},
       {:phoenix_view, "~> 2.0"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
