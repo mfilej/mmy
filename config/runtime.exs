@@ -33,9 +33,14 @@ if config_env() == :prod do
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
+  extra_origins =
+    (System.get_env("PHX_EXTRA_ORIGINS") || "")
+    |> String.split(",")
+    |> Enum.reject(&(&1 == ""))
+
   config :ridle, RidleWeb.Endpoint,
     url: [host: host, port: 443],
-    check_origin: ["//#{host}"],
+    check_origin: ["//#{host}" | extra_origins],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.

@@ -9,3 +9,6 @@ flyctl = "latest"
 
 [tasks.deploy]
 run = "fly deploy"
+
+[tasks."prod:logs"]
+run = "ssh $AVOCADO 'journalctl -u mmy -n 100 --no-pager'"
